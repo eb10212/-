@@ -1,7 +1,3 @@
-#存成json
-#放入mongodb
-#加快速度
-
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
@@ -55,8 +51,4 @@ for id in id_list:
         time.sleep(60)
 
 
-        # with open('./movie_about.csv','a',encoding='utf-8') as f:
-        #     for i in about_data:
-        #         f.write(str(i)+ '|')
-        #     f.write('\n')
-        # print(add_column_data)
+ 
