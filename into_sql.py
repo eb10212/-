@@ -3,7 +3,7 @@ import pandas as pd
 
 #先去SQL建立好資料庫名稱(movie_test)&標格名稱(Basic_content)
 #連接MySQL
-conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='u65p0123', db='movie_test', charset='utf8mb4')
+conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='', db='movie_test', charset='utf8mb4')
 print('Successfully connected!')
 #建立游標
 cursor = conn.cursor()
