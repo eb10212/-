@@ -87,12 +87,8 @@ def movie_content(id_new):
     type_soup = soup.select('div[class="level_name"] a')
     movie_type = []
     for i in range(len(type_soup)):
-        if i != len(type_soup) - 1:
-            # print(type_soup[i].text.strip(),end=',')
-            movie_type.append(type_soup[i].text.strip())
-        else:
-            # print(type_soup[i].text.strip())
-            movie_type.append(type_soup[i].text.strip())
+        movie_type.append(type_soup[i].text.strip())
+        
     # 電影分級
     class_soup = soup.select('div[class="movie_intro_info_r"] div')
     class_year = class_soup[0]['class']
