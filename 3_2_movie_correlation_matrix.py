@@ -1,6 +1,6 @@
 '''
 電影相似度矩陣
-參考-https://kknews.cc/zh-tw/code/nar4ez5.html
+
 '''
 import pandas as pd
 df = pd.read_csv('./movie_all.csv')
