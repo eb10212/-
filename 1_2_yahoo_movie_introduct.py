@@ -17,7 +17,7 @@ def movie_Introduction(id):
     url = 'https://movies.yahoo.com.tw/movieinfo_main.html/id={}'.format(id)
     about_data = []
     # 方式3:與用手機版面
-    useragent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Mobile Safari/537.36'
+    useragent = '...'#自己的
     headers = {'User-Agent': useragent,
                'x-requested-with': 'XMLHttpRequest'}
     cookie = {'nexagesd': '4'}
