@@ -20,7 +20,7 @@ l=[]
 for n,id in enumerate(id_list):
     try:
         url='https://movies.yahoo.com.tw/movieinfo_main.html/id={}'.format(id)
-        headers={'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36'}
+        headers={'...'}#帶自己的
         res=requests.get(url,headers=headers)
         soup=BeautifulSoup(res.text,'html.parser')
         #電影海報
