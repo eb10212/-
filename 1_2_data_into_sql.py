@@ -9,7 +9,7 @@ print('Successfully connected!')
 cursor = conn.cursor()
 
 #將csv寫入SQl
-df=pd.read_csv('m.csv')
+df=pd.read_csv('movie.csv')
 counts = 0      #計算筆數
 for each in df.values:          # 每一條資料都應該單獨新增，所以每次新增的時候都要重置一遍sql語句
         sql = 'insert into '+'Basic_content'+' values('
