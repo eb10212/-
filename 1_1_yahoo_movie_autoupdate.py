@@ -85,14 +85,14 @@ def movie_content(id_new):
     #         print(i)
     # 電影類型
     type_soup = soup.select('div[class="level_name"] a')
-    type = []
+    movie_type = []
     for i in range(len(type_soup)):
         if i != len(type_soup) - 1:
             # print(type_soup[i].text.strip(),end=',')
-            type.append(type_soup[i].text.strip())
+            movie_type.append(type_soup[i].text.strip())
         else:
             # print(type_soup[i].text.strip())
-            type.append(type_soup[i].text.strip())
+            movie_type.append(type_soup[i].text.strip())
     # 電影分級
     class_soup = soup.select('div[class="movie_intro_info_r"] div')
     class_year = class_soup[0]['class']
@@ -117,7 +117,7 @@ def movie_content(id_new):
             elif y == '18':
                 class_year = '限制級/R'
                 # print('限制級/R')
-    data_c = [id, title1, title2, date, time, company, IMDb, director, actor, type, class_year]
+    data_c = [id, title1, title2, date, time, company, IMDb, director, actor, movie_type, class_year]
     data.append(data_c)
     return data
 
