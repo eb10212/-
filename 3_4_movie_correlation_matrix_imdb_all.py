@@ -55,16 +55,16 @@
 #===================================================================================
 
 # #STEP2:
-# #將電影將電影簡介斷字&使用停用字典
-# import pandas as pd
-# import nltk
-# import time
-# a=time.time()
-#
-# df = pd.read_csv('./movie_IMDB_new.csv')
-#
-# #電影簡介斷字斷詞(含使用停用字典)
-#
+#將電影將電影簡介斷字&使用停用字典
+import pandas as pd
+import nltk
+import time
+a=time.time()
+
+df = pd.read_csv('./movie_IMDB_new.csv')
+
+#電影簡介斷字斷詞
+# #方法1:使用nltk+自定義停用字典
 # stop_words_list = []
 # with open(file='jieba_data/english_stop.txt', mode='r', encoding="UTF-8") as file:
 #     for line in file:
@@ -84,57 +84,85 @@
 #                 each_cut.append(t)
 #         df['關鍵字'][i] = ' '.join(each_cut)          #存成str型態
 #         print(id_no,'成功')
-#     except:
+#     except :
 #         print(id_no)
 #         continue
 # df.to_csv('./movie_IMDB_result.csv',index=False,encoding='utf-8-sig')
 # b=time.time()
 # print(b-a)
 
+#法2:使用Rake函數
+from rake_nltk import Rake
+
+df['關鍵字_new'] = ''
+r = Rake()
+for index, row in df.iterrows():
+    r.extract_keywords_from_text(row['關鍵字'])
+    key_words_dict_scores = r.get_word_degrees()
+    row['關鍵字_new'] = list(key_words_dict_scores.keys())
+# df2['關鍵字_new']
+df['Bag_of_words'] = ''
+for index, row in df.iterrows():
+    words = ''
+    words += ' '.join(row['關鍵字_new']) + ' '
+    row['Bag_of_words'] = words
+df = df[['IMDB_ID','Bag_of_words']]
+df.to_csv('./movie_IMDB_result_rake.csv', index=False, encoding='utf-8-sig')
+
+#若有加演員及導演在關鍵字中可使用下列方式
+# df['類型'] = df['類型'].map(lambda x: x.split(','))
+# df['演員'] = df['演員'].map(lambda x: x.split(',')[:3])
+# df['導演'] = df['導演'].map(lambda x: x.split(','))
+# for index, row in df.iterrows():
+#     row['類型'] = [x.lower().replace(' ','') for x in row['類型']]
+#     row['演員'] = [x.lower().replace(' ','') for x in row['演員']]
+#     row['導演'] = [x.lower().replace(' ','') for x in row['導演']]
+
+
 #===================================================================================
-import time
-import pandas as pd
-df=pd.read_csv('./movie_IMDB_result.csv')
-
-#STEP3:相似矩陣
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
-count = CountVectorizer()
-count_matrix = count.fit_transform(df['關鍵字'])
-cosine_sim = cosine_similarity(count_matrix, count_matrix)
-
-
-#STEP4:將矩陣存入mongo
-from pymongo import MongoClient
-conn = MongoClient('mongodb://localhost:27017/')        #連線-27017為預設port
-db = conn.Movie_project                                 #建立資料庫-Movie_project(如果沒有會自行創建) 
-#mongo除錯
-def column_filter(s):
-    return str(s).replace(r'.','')
-for c in df['primaryTitle']:
-    df['primaryTitle']=df['primaryTitle'].apply(column_filter)
-l=[]
-movie_field=['_id','IMDB電影名']
-m_id=list(df['IMDB_ID'])
-m_name=list(df['primaryTitle'])
-m_total=[m_id,m_name]
-for i in range(len(m_id)):
-    try :
-        top_30_similar = pd.Series(cosine_sim[i], index=list(df['primaryTitle'])).sort_values(ascending=False).iloc[1:31]
-        d = {}
-        for j in range(len(movie_field)):
-            d[movie_field[j]]=str(m_total[j][i])
-            d['其他電影相似度']=dict(top_30_similar)
-        # print(d)
-        result = db.movie_similarity_IMDB_new.insert(d)          # 建立桶子movie_similarity_IMDB(表格)
-        print('ID={}完成'.format(df['IMDB_ID'][i]))
-    except Exception as e:
-        l.append(df['primaryTitle'][i])
-        print('ID={}失敗'.format(df['IMDB_ID'][i]))
-        print(e)
-        continue
-print(l)
-d=time.time()
+# import time
+# import pandas as pd
+# df=pd.read_csv('./movie_IMDB_result.csv')
+# # df=pd.read_csv('./movie_IMDB_result_rake.csv')
+# #STEP3:相似矩陣
+# from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.feature_extraction.text import CountVectorizer
+# count = CountVectorizer()
+# count_matrix = count.fit_transform(df['關鍵字'])
+# cosine_sim = cosine_similarity(count_matrix, count_matrix)
+#
+#
+# #STEP4:將矩陣存入mongo
+# from pymongo import MongoClient
+# conn = MongoClient('mongodb://localhost:27017/')        #連線-27017為預設port
+# db = conn.Movie_project                                 #建立資料庫-Movie_project(如果沒有會自行創建) 
+# #mongo除錯
+# def column_filter(s):
+#     return str(s).replace(r'.','')
+# for c in df['primaryTitle']:
+#     df['primaryTitle']=df['primaryTitle'].apply(column_filter)
+# l=[]
+# movie_field=['_id','IMDB電影名']
+# m_id=list(df['IMDB_ID'])
+# m_name=list(df['primaryTitle'])
+# m_total=[m_id,m_name]
+# for i in range(len(m_id)):
+#     try :
+#         top_30_similar = pd.Series(cosine_sim[i], index=list(df['primaryTitle'])).sort_values(ascending=False).iloc[1:31]
+#         d = {}
+#         for j in range(len(movie_field)):
+#             d[movie_field[j]]=str(m_total[j][i])
+#             d['其他電影相似度']=dict(top_30_similar)
+#         # print(d)
+#         result = db.movie_similarity_IMDB_new.insert(d)          # 建立桶子movie_similarity_IMDB(表格)
+#         print('ID={}完成'.format(df['IMDB_ID'][i]))
+#     except Exception as e:
+#         l.append(df['primaryTitle'][i])
+#         print('ID={}失敗'.format(df['IMDB_ID'][i]))
+#         print(e)
+#         continue
+# print(l)
+# d=time.time()
 
 
 
